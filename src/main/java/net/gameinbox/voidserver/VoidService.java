@@ -59,6 +59,11 @@ public class VoidService {
             LOGGER.info("Configuration file not found, created one by default.");
         }
         configurationManager.loadConfiguration();
+
+        // VoidServer init
+        LOGGER.info("Initializing VoidServer...");
+        final VoidServer voidServer = new VoidServer(configurationManager);
+        voidServer.init();
     }
 
 }
