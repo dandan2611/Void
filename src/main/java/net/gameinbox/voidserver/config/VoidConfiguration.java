@@ -17,4 +17,16 @@ public class VoidConfiguration {
      */
     int maxPlayers = -1;
 
+    public int getServerPort() {
+        return serverPort;
+    }
+
+    public boolean usePlugins() {
+        return usePlugins;
+    }
+
+    public int maxPlayers() {
+        return maxPlayers;
+    }
+
 }
