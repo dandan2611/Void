@@ -12,7 +12,7 @@ import java.io.IOException;
 
 public class VoidService {
 
-    private static final Logger logger = LoggerFactory.getLogger(VoidService.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(VoidService.class);
 
     /**
      * Program launch function
@@ -28,8 +28,8 @@ public class VoidService {
      */
     public VoidService(String[] args) throws IOException, XmlPullParserException {
         // Version warn message
-        logger.info("-----------------------------------------");
-        logger.info("Launching Void Limbo server...");
+        LOGGER.info("-----------------------------------------");
+        LOGGER.info("Launching Void Limbo server...");
 
         final MavenXpp3Reader reader = new MavenXpp3Reader();
         final Model model = reader.read(new FileReader("pom.xml"));
@@ -39,24 +39,24 @@ public class VoidService {
         final boolean isBetaBuild = version.contains("BETA");
 
         if(isAlphaBuild) {
-            logger.warn("WATCH OUT! You are currently using the alpha build " + version + "!");
-            logger.warn("A bug or a crash can occur at any time!");
+            LOGGER.warn("WATCH OUT! You are currently using the alpha build " + version + "!");
+            LOGGER.warn("A bug or a crash can occur at any time!");
         }
         else if(isBetaBuild) {
-            logger.warn("WARNING! You are currently using the beta build " + version + "!");
-            logger.warn("A bug or a crash can occur at any time!");
+            LOGGER.warn("WARNING! You are currently using the beta build " + version + "!");
+            LOGGER.warn("A bug or a crash can occur at any time!");
         }
         else
-            logger.info("Current version: " + version);
+            LOGGER.info("Current version: " + version);
 
-        logger.info("-----------------------------------------");
+        LOGGER.info("-----------------------------------------");
 
         // Configuration loading
-        logger.info("Loading configuration...");
+        LOGGER.info("Loading configuration...");
         final ConfigurationManager configurationManager = new ConfigurationManager();
         if(!ConfigurationManager.CONFIGURATION_FILE.exists()) {
             configurationManager.generateDefaultConfigurationFile();
-            logger.info("Configuration file not found, created one by default.");
+            LOGGER.info("Configuration file not found, created one by default.");
         }
         configurationManager.loadConfiguration();
     }
