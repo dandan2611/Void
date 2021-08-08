@@ -59,4 +59,14 @@ public class ConfigurationManager {
         fileWriter.close();
     }
 
+    /**
+     * Get loaded configuration file
+     * @return Loaded configuration
+     */
+    public VoidConfiguration getConfig() {
+        if(loadedConfiguration == null)
+            throw new NullPointerException("Configuration not loaded");
+        return loadedConfiguration;
+    }
+
 }
