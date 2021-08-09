@@ -53,7 +53,7 @@ public class PacketDecoder extends ChannelInboundHandlerAdapter {
             super.channelRead(ctx, msg);
         }
         catch (Exception exception) {
-            LOGGER.info("{} > Unable to decode packet sent {}", channel.remoteAddress().toString(),
+            LOGGER.info("{} > Unable to decode packet sent: {}", channel.remoteAddress().toString(),
                     exception.getMessage());
         }
     }
