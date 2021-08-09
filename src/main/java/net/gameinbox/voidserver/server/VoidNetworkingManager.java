@@ -8,6 +8,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.util.AttributeKey;
 import net.gameinbox.voidserver.VoidServer;
+import net.gameinbox.voidserver.security.EncryptionManager;
 import net.gameinbox.voidserver.server.packet.PacketQueue;
 import net.gameinbox.voidserver.server.packet.PacketRegistry;
 import org.slf4j.Logger;
@@ -32,6 +33,8 @@ public class VoidNetworkingManager {
 
     private PacketQueue packetQueue;
 
+    private EncryptionManager encryptionManager;
+
     public VoidNetworkingManager(VoidServer server) {
         this.server = server;
         this.serverPort = server.getConfigurationManager().getConfig().getServerPort();
@@ -44,6 +47,10 @@ public class VoidNetworkingManager {
 
         // PacketQueue
         packetQueue = new PacketQueue(server);
+
+        // EncryptionManager
+        encryptionManager = new EncryptionManager();
+        encryptionManager.init();
 
         // Acceptation group
         acceptationGroup = new NioEventLoopGroup();
