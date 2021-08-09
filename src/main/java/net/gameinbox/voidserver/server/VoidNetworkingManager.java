@@ -105,4 +105,8 @@ public class VoidNetworkingManager {
         return packetQueue;
     }
 
+    public EncryptionManager getEncryptionManager() {
+        return encryptionManager;
+    }
+    
 }

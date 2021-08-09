@@ -9,19 +9,31 @@ public class EncryptionManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EncryptionManager.class);
 
+    private PublicKey publicKey;
+    private PrivateKey privateKey;
+
     public void init() {
         try {
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-            
+
             keyPairGenerator.initialize(1024);
             KeyPair keyPair = keyPairGenerator.genKeyPair();
-            PublicKey publicKey = keyPair.getPublic();
-            PrivateKey privateKey = keyPair.getPrivate();
+
+            publicKey = keyPair.getPublic();
+            privateKey = keyPair.getPrivate();
 
             LOGGER.info("Generated new keypair");
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
+    }
+
+    public PublicKey getPublicKey() {
+        return publicKey;
+    }
+
+    public PrivateKey getPrivateKey() {
+        return privateKey;
     }
 
 }
