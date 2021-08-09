@@ -35,15 +35,23 @@ public class PacketQueue {
         if(packetStatus instanceof PacketServerListPing) {
             PacketServerListPing packetServerListPing = (PacketServerListPing) packetStatus;
 
-            if(packetServerListPing.nextState == 1) {
-                PacketClientServerInfo packetClientServerInfo = new PacketClientServerInfo();
-                packetClientServerInfo.versionName = "Void 1.17.1";
-                packetClientServerInfo.protocol = ProtocolVersion.V1_17_1.getProtocol();
-                packetClientServerInfo.maxPlayers = 1;
-                packetClientServerInfo.onlinePlayers = 1;
-                packetClientServerInfo.descriptionText = "Void-powered limbo server";
+            switch (packetServerListPing.nextState) {
+                case 1:
+                    // Infos
 
-                playerConnection.sendPacket(packetClientServerInfo.encode());
+                    PacketClientServerInfo packetClientServerInfo = new PacketClientServerInfo();
+                    packetClientServerInfo.versionName = "Void 1.17.1";
+                    packetClientServerInfo.protocol = ProtocolVersion.V1_17_1.getProtocol();
+                    packetClientServerInfo.maxPlayers = server.getConfigurationManager().getConfig().getMaxPlayers();
+                    packetClientServerInfo.onlinePlayers = 1;
+                    packetClientServerInfo.descriptionText = server.getConfigurationManager().getConfig().getMotdText();
+
+                    playerConnection.sendPacket(packetClientServerInfo.encode());
+                    break;
+                case 2:
+                    // Login
+
+                    break;
             }
         }
         else if(packetStatus instanceof PacketServerPing) {
