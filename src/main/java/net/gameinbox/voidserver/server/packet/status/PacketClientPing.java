@@ -1,25 +1,23 @@
 package net.gameinbox.voidserver.server.packet.status;
 
 import net.gameinbox.voidserver.buffer.BufferReader;
+import net.gameinbox.voidserver.buffer.BufferWriter;
 import net.gameinbox.voidserver.server.packet.EncodedPacket;
 import net.gameinbox.voidserver.server.packet.PacketBound;
 import net.gameinbox.voidserver.server.protocol.ProtocolVersion;
 
-public class PacketServerListPing extends PacketStatus<PacketServerListPing> {
+public class PacketClientPing extends PacketStatus<PacketClientPing> {
 
-    public int protocolVersion;
-    public String serverAddress;
-    public short serverPort;
-    public int nextState;
+    public long value;
 
     @Override
     public int id() {
-        return 0x00;
+        return 0x01;
     }
 
     @Override
     public PacketBound packetBound() {
-        return PacketBound.CLIENTBOUND;
+        return PacketBound.SERVERBOUND;
     }
 
     @Override
@@ -30,17 +28,22 @@ public class PacketServerListPing extends PacketStatus<PacketServerListPing> {
     }
 
     @Override
-    public PacketServerListPing decode(BufferReader data) {
-        protocolVersion = data.readVarInt();
-        serverAddress = data.readString();
-        serverPort = data.getBuffer().readShort();
-        nextState = data.readVarInt();
-        return this;
+    public PacketClientPing decode(BufferReader data) {
+        return null;
     }
 
     @Override
     public EncodedPacket encode() {
-        return null;
+        BufferWriter writer = BufferWriter.newWriter();
+
+        writer.writeVarInt(id());
+        writer.getBuffer().writeLong(value);
+
+        EncodedPacket encodedPacket = new EncodedPacket(writer.getBuffer());
+
+        writer.release();
+
+        return encodedPacket;
     }
 
 }

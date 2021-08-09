@@ -5,16 +5,13 @@ import net.gameinbox.voidserver.server.packet.EncodedPacket;
 import net.gameinbox.voidserver.server.packet.PacketBound;
 import net.gameinbox.voidserver.server.protocol.ProtocolVersion;
 
-public class PacketServerListPing extends PacketStatus<PacketServerListPing> {
+public class PacketServerPing extends PacketStatus<PacketServerPing> {
 
-    public int protocolVersion;
-    public String serverAddress;
-    public short serverPort;
-    public int nextState;
+    public long value;
 
     @Override
     public int id() {
-        return 0x00;
+        return 0x01;
     }
 
     @Override
@@ -30,11 +27,8 @@ public class PacketServerListPing extends PacketStatus<PacketServerListPing> {
     }
 
     @Override
-    public PacketServerListPing decode(BufferReader data) {
-        protocolVersion = data.readVarInt();
-        serverAddress = data.readString();
-        serverPort = data.getBuffer().readShort();
-        nextState = data.readVarInt();
+    public PacketServerPing decode(BufferReader data) {
+        value = data.getBuffer().readLong();
         return this;
     }
 
@@ -42,5 +36,4 @@ public class PacketServerListPing extends PacketStatus<PacketServerListPing> {
     public EncodedPacket encode() {
         return null;
     }
-
 }
