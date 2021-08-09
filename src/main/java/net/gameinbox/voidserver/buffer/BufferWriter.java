@@ -52,6 +52,10 @@ public class BufferWriter {
         return this;
     }
 
+    public void release() {
+        buffer.release();
+    }
+
     public ByteBuf getBuffer() {
         return buffer;
     }

@@ -55,6 +55,10 @@ public class BufferReader {
         return buffer.readCharSequence(length, StandardCharsets.UTF_8).toString();
     }
 
+    public void release() {
+        buffer.release();
+    }
+
     public ByteBuf getBuffer() {
         return buffer;
     }
