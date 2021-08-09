@@ -1,6 +1,7 @@
 package net.gameinbox.voidserver;
 
 import net.gameinbox.voidserver.config.ConfigurationManager;
+import net.gameinbox.voidserver.server.VoidNetworkingManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
