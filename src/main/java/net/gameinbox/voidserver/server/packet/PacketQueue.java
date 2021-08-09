@@ -1,16 +1,25 @@
 package net.gameinbox.voidserver.server.packet;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import net.gameinbox.voidserver.VoidServer;
+import net.gameinbox.voidserver.player.VoidPlayer;
 import net.gameinbox.voidserver.server.PlayerConnection;
 import net.gameinbox.voidserver.server.VoidNetworkingManager;
 import net.gameinbox.voidserver.server.packet.login.PacketClientEncryptionRequest;
+import net.gameinbox.voidserver.server.packet.login.PacketClientLoginSuccess;
+import net.gameinbox.voidserver.server.packet.login.PacketLogin;
+import net.gameinbox.voidserver.server.packet.login.PacketServerEncryptionResponse;
 import net.gameinbox.voidserver.server.packet.status.*;
 import net.gameinbox.voidserver.server.protocol.ProtocolVersion;
+import net.gameinbox.voidserver.utils.UuidUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Arrays;
+import java.util.UUID;
 
 public class PacketQueue {
 
@@ -29,6 +38,9 @@ public class PacketQueue {
         switch (communicationState) {
             case STATUS:
                 statusPacket(playerConnection, packet);
+                break;
+            case LOGIN:
+                loginPacket(playerConnection, packet);
                 break;
         }
     }
@@ -59,6 +71,29 @@ public class PacketQueue {
 
                     LOGGER.info("{} is logging in!", packetServerListPing.username);
 
+                    if(!server.getConfigurationManager().getConfig().isUseEncryption()) {
+                        playerConnection.communicationState = CommunicationState.PLAY;
+
+                        UUID uuid = UUID.randomUUID();
+
+                        VoidPlayer player = new VoidPlayer(packetServerListPing.username, uuid, playerConnection);
+
+                        playerConnection.setParent(player);
+
+                        server.getPlayers().add(player);
+
+                        PacketClientLoginSuccess packetClientLoginSuccess = new PacketClientLoginSuccess();
+
+                        packetClientLoginSuccess.uuid = UuidUtils.asBytes(uuid);
+                        packetClientLoginSuccess.username = player.getUsername();
+
+                        playerConnection.sendPacket(packetClientLoginSuccess.encode());
+
+                        LOGGER.info("{} [{}] logged in!", packetServerListPing.username, uuid.toString());
+
+                        return;
+                    }
+
                     PacketClientEncryptionRequest packetClientEncryptionRequest = new PacketClientEncryptionRequest();
 
                     packetClientEncryptionRequest.serverId = "";
@@ -87,6 +122,16 @@ public class PacketQueue {
             packetClientPing.value = packetServerPing.value;
 
             playerConnection.sendPacket(packetClientPing.encode());
+        }
+    }
+
+    private void loginPacket(PlayerConnection playerConnection, Packet<?> packet) {
+        PacketLogin<?> packetLogin = (PacketLogin<?>) packet;
+
+        if(packetLogin instanceof PacketServerEncryptionResponse) {
+            PacketServerEncryptionResponse packetServerEncryptionResponse = (PacketServerEncryptionResponse) packetLogin;
+
+            LOGGER.info(Arrays.toString(packetServerEncryptionResponse.sharedSecret));
         }
     }
 

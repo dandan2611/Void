@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import net.gameinbox.voidserver.buffer.BufferReader;
 import net.gameinbox.voidserver.server.packet.login.PacketClientEncryptionRequest;
 import net.gameinbox.voidserver.server.packet.login.PacketLogin;
+import net.gameinbox.voidserver.server.packet.login.PacketServerEncryptionResponse;
 import net.gameinbox.voidserver.server.packet.status.PacketClientPing;
 import net.gameinbox.voidserver.server.packet.status.PacketServerListPing;
 import net.gameinbox.voidserver.server.packet.status.PacketServerPing;
@@ -30,6 +31,7 @@ public class PacketRegistry {
                 CommunicationState.LOGIN,
                 new PacketBox<PacketLogin<?>>()
                         .addPacket(new PacketClientEncryptionRequest(), PacketClientEncryptionRequest.class)
+                        .addPacket(new PacketServerEncryptionResponse(), PacketServerEncryptionResponse.class)
         );
     }
 
