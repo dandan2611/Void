@@ -21,8 +21,12 @@ public class VoidConfiguration {
         return serverPort;
     }
 
-    public int maxPlayers() {
+    public int getMaxPlayers() {
         return maxPlayers;
+    }
+
+    public String getMotdText() {
+        return motdText;
     }
 
 }
