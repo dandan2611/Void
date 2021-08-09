@@ -6,12 +6,20 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.util.AttributeKey;
+import net.gameinbox.voidserver.VoidServer;
+import net.gameinbox.voidserver.server.packet.PacketQueue;
+import net.gameinbox.voidserver.server.packet.PacketRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class VoidNetworkingManager {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(VoidNetworkingManager.class);
+
+    private static final AttributeKey<PlayerConnection> connectionKey = AttributeKey.valueOf("playerConnection");
+
+    private final VoidServer server;
 
     private final int serverPort;
 
@@ -20,11 +28,23 @@ public class VoidNetworkingManager {
 
     private ChannelFuture channelFuture;
 
-    public VoidNetworkingManager(int serverPort) {
-        this.serverPort = serverPort;
+    private PacketRegistry packetRegistry;
+
+    private PacketQueue packetQueue;
+
+    public VoidNetworkingManager(VoidServer server) {
+        this.server = server;
+        this.serverPort = server.getConfigurationManager().getConfig().getServerPort();
     }
 
     public void init() {
+        // Init PacketRegistry
+        LOGGER.info("Loading PacketRegistry");
+        packetRegistry = new PacketRegistry();
+
+        // PacketQueue
+        packetQueue = new PacketQueue(server);
+
         // Acceptation group
         acceptationGroup = new NioEventLoopGroup();
 
@@ -36,7 +56,7 @@ public class VoidNetworkingManager {
 
             serverBootstrap.group(acceptationGroup, processingGroup)
                     .channel(NioServerSocketChannel.class)
-                    .childHandler(new VoidChannelInitializer())
+                    .childHandler(new VoidChannelInitializer(this))
                     .option(ChannelOption.SO_BACKLOG, 128)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
 
@@ -64,6 +84,18 @@ public class VoidNetworkingManager {
         }
         processingGroup.shutdownGracefully();
         acceptationGroup.shutdownGracefully();
+    }
+
+    public AttributeKey<PlayerConnection> getConnectionKey() {
+        return connectionKey;
+    }
+
+    public PacketRegistry getPacketRegistry() {
+        return packetRegistry;
+    }
+
+    public PacketQueue getPacketQueue() {
+        return packetQueue;
     }
 
 }
