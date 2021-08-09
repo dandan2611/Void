@@ -93,6 +93,10 @@ public class VoidNetworkingManager {
         acceptationGroup.shutdownGracefully();
     }
 
+    public VoidServer getServer() {
+        return server;
+    }
+
     public AttributeKey<PlayerConnection> getConnectionKey() {
         return connectionKey;
     }
