@@ -34,6 +34,8 @@ public class PacketDecoder extends ChannelInboundHandlerAdapter {
 
         BufferReader reader = BufferReader.newReader(buf.asReadOnly());
 
+        LOGGER.info("{} > Data received", channel.remoteAddress().toString());
+
         try {
             int packetLength = reader.readVarInt();
             int packetId = reader.readVarInt();
