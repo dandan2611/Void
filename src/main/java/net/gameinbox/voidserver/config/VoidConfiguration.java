@@ -12,6 +12,11 @@ public class VoidConfiguration {
      */
     int maxPlayers = -1;
 
+    /**
+     * Server description in server list
+     */
+    String motdText = "A Void-powered limbo server!";
+
     public int getServerPort() {
         return serverPort;
     }
