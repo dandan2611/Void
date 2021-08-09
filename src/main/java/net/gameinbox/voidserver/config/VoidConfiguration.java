@@ -17,6 +17,11 @@ public class VoidConfiguration {
      */
     String motdText = "A Void-powered limbo server!";
 
+    /**
+     * Do the server need to use encryption? (online mode)
+     */
+    boolean useEncryption = false;
+
     public int getServerPort() {
         return serverPort;
     }
@@ -27,6 +32,10 @@ public class VoidConfiguration {
 
     public String getMotdText() {
         return motdText;
+    }
+
+    public boolean isUseEncryption() {
+        return useEncryption;
     }
 
 }
