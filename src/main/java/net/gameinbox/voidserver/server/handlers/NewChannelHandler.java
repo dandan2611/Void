@@ -32,4 +32,19 @@ public class NewChannelHandler extends ChannelInboundHandlerAdapter {
         super.channelRegistered(ctx);
     }
 
+    @Override
+    public void channelUnregistered(ChannelHandlerContext ctx) throws Exception {
+        Channel channel = ctx.channel();
+
+        if(channel.attr(networkingManager.getConnectionKey()).get().communicationState == CommunicationState.PLAY) {
+            PlayerConnection playerConnection = channel.attr(networkingManager.getConnectionKey()).get();
+
+            networkingManager.getServer().unregisterPlayer(playerConnection.getParent());
+
+            LOGGER.info("{} [{}] left the game", playerConnection.getParent().getUsername(), playerConnection.getParent().getUuid().toString());
+        }
+
+        super.channelUnregistered(ctx);
+    }
+
 }
