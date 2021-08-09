@@ -3,10 +3,14 @@ package net.gameinbox.voidserver.server.packet;
 import net.gameinbox.voidserver.VoidServer;
 import net.gameinbox.voidserver.server.PlayerConnection;
 import net.gameinbox.voidserver.server.VoidNetworkingManager;
+import net.gameinbox.voidserver.server.packet.login.PacketClientEncryptionRequest;
 import net.gameinbox.voidserver.server.packet.status.*;
 import net.gameinbox.voidserver.server.protocol.ProtocolVersion;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 
 public class PacketQueue {
 
@@ -50,6 +54,28 @@ public class PacketQueue {
                     break;
                 case 2:
                     // Login
+
+                    playerConnection.communicationState = CommunicationState.LOGIN;
+
+                    LOGGER.info("{} is logging in!", packetServerListPing.username);
+
+                    PacketClientEncryptionRequest packetClientEncryptionRequest = new PacketClientEncryptionRequest();
+
+                    packetClientEncryptionRequest.serverId = "";
+                    packetClientEncryptionRequest.publicKeyLength = server.getNetworkingManager().getEncryptionManager().getPublicKey().getEncoded().length;
+                    packetClientEncryptionRequest.publicKey = server.getNetworkingManager().getEncryptionManager().getPublicKey().getEncoded();
+
+                    byte[] bytes = new byte[4];
+                    try {
+                        SecureRandom.getInstanceStrong().nextBytes(bytes);
+                    } catch (NoSuchAlgorithmException e) {
+                        e.printStackTrace();
+                    }
+
+                    packetClientEncryptionRequest.verifyTokenLength = bytes.length;
+                    packetClientEncryptionRequest.verifyToken = bytes;
+
+                    playerConnection.sendPacket(packetClientEncryptionRequest.encode());
 
                     break;
             }

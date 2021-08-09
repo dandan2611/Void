@@ -108,5 +108,5 @@ public class VoidNetworkingManager {
     public EncryptionManager getEncryptionManager() {
         return encryptionManager;
     }
-    
+
 }
