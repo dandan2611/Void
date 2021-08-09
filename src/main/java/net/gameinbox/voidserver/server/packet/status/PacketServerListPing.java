@@ -11,6 +11,7 @@ public class PacketServerListPing extends PacketStatus<PacketServerListPing> {
     public String serverAddress;
     public short serverPort;
     public int nextState;
+    public String username;
 
     @Override
     public int id() {
@@ -35,6 +36,11 @@ public class PacketServerListPing extends PacketStatus<PacketServerListPing> {
         serverAddress = data.readString();
         serverPort = data.getBuffer().readShort();
         nextState = data.readVarInt();
+        if(nextState == 2) {
+            int i1 = data.readVarInt(); // Unknown values
+            int i2 = data.readVarInt(); // What are these ?
+            username = data.readString();
+        }
         return this;
     }
 
