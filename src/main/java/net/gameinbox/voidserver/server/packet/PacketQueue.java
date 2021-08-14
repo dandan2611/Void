@@ -78,15 +78,10 @@ public class PacketQueue {
                         packetClientEncryptionRequest.publicKeyLength = server.getNetworkingManager().getEncryptionManager().getPublicKey().getEncoded().length;
                         packetClientEncryptionRequest.publicKey = server.getNetworkingManager().getEncryptionManager().getPublicKey().getEncoded();
 
-                        byte[] bytes = new byte[4];
-                        try {
-                            SecureRandom.getInstanceStrong().nextBytes(bytes);
-                        } catch (NoSuchAlgorithmException e) {
-                            e.printStackTrace();
-                        }
+                        byte[] verifyToken = playerConnection.generateVerifyToken();
 
-                        packetClientEncryptionRequest.verifyTokenLength = bytes.length;
-                        packetClientEncryptionRequest.verifyToken = bytes;
+                        packetClientEncryptionRequest.verifyTokenLength = verifyToken.length;
+                        packetClientEncryptionRequest.verifyToken = verifyToken;
 
                         playerConnection.sendPacket(packetClientEncryptionRequest.encode());
                     }
