@@ -125,7 +125,15 @@ public class PacketQueue {
         if(packetLogin instanceof PacketServerEncryptionResponse) {
             PacketServerEncryptionResponse packetServerEncryptionResponse = (PacketServerEncryptionResponse) packetLogin;
 
-            LOGGER.info(Arrays.toString(packetServerEncryptionResponse.sharedSecret));
+            byte[] verifyToken = playerConnection.getVerifyToken();
+            byte[] encryptedVerifyToken = packetServerEncryptionResponse.verifyToken;
+
+            // Decrypt received verify token
+            byte[] decryptedVerifyToken = server.getNetworkingManager().getEncryptionManager().decrypt(encryptedVerifyToken);
+
+            // Compare tokens
+            LOGGER.info(Arrays.equals(verifyToken, decryptedVerifyToken) + "");
+
         }
     }
 
