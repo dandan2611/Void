@@ -20,6 +20,7 @@ public class PlayerConnection {
 
     private VoidPlayer parent;
 
+    private byte[] sharedSecret;
     private byte[] verifyToken;
 
     public PlayerConnection(Channel channel, CommunicationState communicationState) {
@@ -39,6 +40,14 @@ public class PlayerConnection {
 
     public void setParent(VoidPlayer parent) {
         this.parent = parent;
+    }
+
+    public void setSharedSecret(byte[] secret) {
+        this.sharedSecret = secret;
+    }
+
+    public byte[] getSharedSecret() {
+        return sharedSecret;
     }
 
     public byte[] generateVerifyToken() {
