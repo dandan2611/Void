@@ -9,6 +9,7 @@ import net.gameinbox.voidserver.server.packet.Packet;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.Arrays;
 
 public class PlayerConnection {
 
@@ -52,6 +53,10 @@ public class PlayerConnection {
 
     public void clearVerifyToken() {
         verifyToken = null;
+    }
+
+    public boolean compareVerifyToken(byte[] token) {
+        return Arrays.equals(verifyToken, token);
     }
 
     public byte[] getVerifyToken() {
