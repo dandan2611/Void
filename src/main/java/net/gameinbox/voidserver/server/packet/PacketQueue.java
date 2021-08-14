@@ -132,8 +132,15 @@ public class PacketQueue {
             byte[] decryptedVerifyToken = server.getNetworkingManager().getEncryptionManager().decrypt(encryptedVerifyToken);
 
             // Compare tokens
-            LOGGER.info(Arrays.equals(verifyToken, decryptedVerifyToken) + "");
+            boolean isTokenGood = Arrays.equals(verifyToken, decryptedVerifyToken);
 
+            if(!isTokenGood) {
+                LOGGER.info("{} > Wrong encrypted verification received! Disconnecting user.", playerConnection.channel.remoteAddress().toString());
+                playerConnection.channel.close();
+                return;
+            }
+
+            
         }
     }
 
