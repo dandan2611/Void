@@ -3,6 +3,10 @@ package net.gameinbox.voidserver.security;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.security.*;
 
 public class EncryptionManager {
@@ -34,6 +38,17 @@ public class EncryptionManager {
 
     public PrivateKey getPrivateKey() {
         return privateKey;
+    }
+
+    public byte[] encrypt(byte[] chain) {
+        try {
+            Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
+            cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+            return cipher.doFinal(chain);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | BadPaddingException | IllegalBlockSizeException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 }
