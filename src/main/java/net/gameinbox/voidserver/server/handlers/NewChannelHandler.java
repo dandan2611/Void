@@ -41,7 +41,7 @@ public class NewChannelHandler extends ChannelInboundHandlerAdapter {
 
             networkingManager.getServer().unregisterPlayer(playerConnection.getParent());
 
-            LOGGER.info("{} [{}] left the game", playerConnection.getParent().getUsername(), playerConnection.getParent().getUuid().toString());
+            LOGGER.info("{} [{}] channel closed", playerConnection.getParent().getUsername(), playerConnection.getParent().getUuid().toString());
         }
 
         super.channelUnregistered(ctx);
