@@ -71,7 +71,26 @@ public class PacketQueue {
 
                     LOGGER.info("{} is logging in!", packetServerListPing.username);
 
-                    if(!server.getConfigurationManager().getConfig().isUseEncryption()) {
+                    if(server.getConfigurationManager().getConfig().isUseEncryption()) {
+                        PacketClientEncryptionRequest packetClientEncryptionRequest = new PacketClientEncryptionRequest();
+
+                        packetClientEncryptionRequest.serverId = "";
+                        packetClientEncryptionRequest.publicKeyLength = server.getNetworkingManager().getEncryptionManager().getPublicKey().getEncoded().length;
+                        packetClientEncryptionRequest.publicKey = server.getNetworkingManager().getEncryptionManager().getPublicKey().getEncoded();
+
+                        byte[] bytes = new byte[4];
+                        try {
+                            SecureRandom.getInstanceStrong().nextBytes(bytes);
+                        } catch (NoSuchAlgorithmException e) {
+                            e.printStackTrace();
+                        }
+
+                        packetClientEncryptionRequest.verifyTokenLength = bytes.length;
+                        packetClientEncryptionRequest.verifyToken = bytes;
+
+                        playerConnection.sendPacket(packetClientEncryptionRequest.encode());
+                    }
+                    else {
                         playerConnection.communicationState = CommunicationState.PLAY;
 
                         UUID uuid = UUID.randomUUID();
@@ -90,27 +109,7 @@ public class PacketQueue {
                         playerConnection.sendPacket(packetClientLoginSuccess.encode());
 
                         LOGGER.info("{} [{}] logged in!", packetServerListPing.username, uuid.toString());
-
-                        return;
                     }
-
-                    PacketClientEncryptionRequest packetClientEncryptionRequest = new PacketClientEncryptionRequest();
-
-                    packetClientEncryptionRequest.serverId = "";
-                    packetClientEncryptionRequest.publicKeyLength = server.getNetworkingManager().getEncryptionManager().getPublicKey().getEncoded().length;
-                    packetClientEncryptionRequest.publicKey = server.getNetworkingManager().getEncryptionManager().getPublicKey().getEncoded();
-
-                    byte[] bytes = new byte[4];
-                    try {
-                        SecureRandom.getInstanceStrong().nextBytes(bytes);
-                    } catch (NoSuchAlgorithmException e) {
-                        e.printStackTrace();
-                    }
-
-                    packetClientEncryptionRequest.verifyTokenLength = bytes.length;
-                    packetClientEncryptionRequest.verifyToken = bytes;
-
-                    playerConnection.sendPacket(packetClientEncryptionRequest.encode());
 
                     break;
             }
