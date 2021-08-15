@@ -36,9 +36,14 @@
         </dependency>
         <dependency>
             <groupId>io.netty</groupId>
-            <artifactId>netty-all</artifactId> <!-- Use 'netty-all' for 4.0 or above -->
+            <artifactId>netty-all</artifactId>
             <version>4.1.66.Final</version>
             <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>4.9.1</version>
         </dependency>
     </dependencies>
     
