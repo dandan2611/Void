@@ -135,12 +135,36 @@ public class PacketQueue {
             boolean isTokenGood = Arrays.equals(verifyToken, decryptedVerifyToken);
 
             if(!isTokenGood) {
-                LOGGER.info("{} > Wrong encrypted verification received! Disconnecting user.", playerConnection.channel.remoteAddress().toString());
+                LOGGER.info("{} > Wrong encrypted verification received! Disconnecting user.",
+                        playerConnection.channel.remoteAddress().toString());
                 playerConnection.channel.close();
                 return;
             }
 
-            
+            byte[] decryptedSharedSecret = server.getNetworkingManager().getEncryptionManager()
+                    .decrypt(packetServerEncryptionResponse.sharedSecret);
+
+            playerConnection.setSharedSecret(decryptedSharedSecret);
+
+            // Login success packet
+            playerConnection.communicationState = CommunicationState.PLAY;
+
+            UUID uuid = UUID.randomUUID();
+
+            VoidPlayer player = new VoidPlayer("aaa", uuid, playerConnection);
+
+            playerConnection.setParent(player);
+
+            server.getPlayers().add(player);
+
+            PacketClientLoginSuccess packetClientLoginSuccess = new PacketClientLoginSuccess();
+
+            packetClientLoginSuccess.uuid = UuidUtils.asBytes(uuid);
+            packetClientLoginSuccess.username = player.getUsername();
+
+            playerConnection.sendPacket(packetClientLoginSuccess.encode());
+
+            LOGGER.info("{} [{}] logged in!", "aaa", uuid.toString());
         }
     }
 

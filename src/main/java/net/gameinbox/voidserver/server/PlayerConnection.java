@@ -1,5 +1,7 @@
 package net.gameinbox.voidserver.server;
 
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.util.AttributeKey;
 import net.gameinbox.voidserver.player.VoidPlayer;
@@ -7,10 +9,11 @@ import net.gameinbox.voidserver.server.packet.CommunicationState;
 import net.gameinbox.voidserver.server.packet.EncodedPacket;
 import net.gameinbox.voidserver.server.packet.Packet;
 
+import javax.crypto.*;
+import javax.crypto.spec.SecretKeySpec;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
 import java.security.SecureRandom;
-import java.util.Arrays;
 
 public class PlayerConnection {
 
@@ -20,7 +23,10 @@ public class PlayerConnection {
 
     private VoidPlayer parent;
 
-    private byte[] sharedSecret;
+    // Encryption
+
+    private Cipher cipher;
+    private SecretKey sharedSecret;
     private byte[] verifyToken;
 
     public PlayerConnection(Channel channel, CommunicationState communicationState) {
@@ -30,8 +36,21 @@ public class PlayerConnection {
 
     public void sendPacket(EncodedPacket packet) {
         if(channel.isWritable()) {
-            channel.writeAndFlush(packet.getEncodedPacket());
+            ByteBuf dataBuf = packet.getEncodedPacket();
+            byte[] data = dataBuf.array();
+            if(hasEncryption())
+                data = encryptPacket(data);
+            channel.writeAndFlush(Unpooled.copiedBuffer(data));
         }
+    }
+
+    private byte[] encryptPacket(byte[] data) {
+        try {
+            return cipher.doFinal(data);
+        } catch (IllegalBlockSizeException | BadPaddingException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public VoidPlayer getParent() {
@@ -43,10 +62,16 @@ public class PlayerConnection {
     }
 
     public void setSharedSecret(byte[] secret) {
-        this.sharedSecret = secret;
+        this.sharedSecret = new SecretKeySpec(secret, "AES");
+        try {
+            this.cipher = Cipher.getInstance("AES/CFB8/NoPadding");
+            cipher.init(Cipher.ENCRYPT_MODE, sharedSecret);
+        } catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException e) {
+            e.printStackTrace();
+        }
     }
 
-    public byte[] getSharedSecret() {
+    public SecretKey getSharedSecret() {
         return sharedSecret;
     }
 
@@ -67,6 +92,10 @@ public class PlayerConnection {
 
     public byte[] getVerifyToken() {
         return verifyToken;
+    }
+
+    public boolean hasEncryption() {
+        return sharedSecret != null;
     }
 
 }
