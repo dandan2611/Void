@@ -14,6 +14,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.HashMap;
 
 public class PlayerConnection {
 
@@ -22,6 +23,10 @@ public class PlayerConnection {
     public CommunicationState communicationState;
 
     private VoidPlayer parent;
+
+    // Temporary data
+
+    private HashMap<String, Object> cache;
 
     // Encryption
 
@@ -32,12 +37,14 @@ public class PlayerConnection {
     public PlayerConnection(Channel channel, CommunicationState communicationState) {
         this.channel = channel;
         this.communicationState = communicationState;
+        this.cache = new HashMap<>();
     }
 
     public void sendPacket(EncodedPacket packet) {
         if(channel.isWritable()) {
             ByteBuf dataBuf = packet.getEncodedPacket();
             byte[] data = dataBuf.array();
+            dataBuf.release();
             if(hasEncryption())
                 data = encryptPacket(data);
             channel.writeAndFlush(Unpooled.copiedBuffer(data));
@@ -96,6 +103,10 @@ public class PlayerConnection {
 
     public boolean hasEncryption() {
         return sharedSecret != null;
+    }
+
+    public HashMap<String, Object> getCache() {
+        return cache;
     }
 
 }

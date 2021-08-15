@@ -64,19 +64,4 @@ public class EncryptionManager {
         return null;
     }
 
-    public String hash(String str) {
-        try {
-            byte[] digest = digest(str, "SHA-1");
-            return new BigInteger(digest).toString(16);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private byte[] digest(String str, String algorithm) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance(algorithm);
-        byte[] strBytes = str.getBytes(StandardCharsets.UTF_8);
-        return md.digest(strBytes);
-    }
-
 }

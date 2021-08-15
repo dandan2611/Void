@@ -3,7 +3,9 @@ package net.gameinbox.voidserver.server.packet;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.gameinbox.voidserver.VoidServer;
+import net.gameinbox.voidserver.mojang.MojangAuthenticator;
 import net.gameinbox.voidserver.player.VoidPlayer;
+import net.gameinbox.voidserver.security.EncryptionManager;
 import net.gameinbox.voidserver.server.PlayerConnection;
 import net.gameinbox.voidserver.server.VoidNetworkingManager;
 import net.gameinbox.voidserver.server.packet.login.PacketClientEncryptionRequest;
@@ -16,6 +18,9 @@ import net.gameinbox.voidserver.utils.UuidUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.math.BigInteger;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
@@ -70,6 +75,8 @@ public class PacketQueue {
                     playerConnection.communicationState = CommunicationState.LOGIN;
 
                     LOGGER.info("{} is logging in!", packetServerListPing.username);
+
+                    playerConnection.getCache().put("username", packetServerListPing.username);
 
                     if(server.getConfigurationManager().getConfig().isUseEncryption()) {
                         PacketClientEncryptionRequest packetClientEncryptionRequest = new PacketClientEncryptionRequest();
@@ -145,6 +152,34 @@ public class PacketQueue {
                     .decrypt(packetServerEncryptionResponse.sharedSecret);
 
             playerConnection.setSharedSecret(decryptedSharedSecret);
+
+            String hash;
+            try {
+                MessageDigest digest = MessageDigest.getInstance("SHA-1");
+
+                byte[] sharedSecret = playerConnection.getSharedSecret().getEncoded();
+                byte[] publicKey = server.getNetworkingManager().getEncryptionManager().getPublicKey().getEncoded();
+                byte[] fb = new byte[sharedSecret.length + publicKey.length];
+                System.arraycopy(sharedSecret, 0, fb, 0, sharedSecret.length);
+                System.arraycopy(publicKey, 0, fb, sharedSecret.length, publicKey.length);
+
+                digest.update(fb);
+                digest.update(sharedSecret);
+                digest.update(publicKey);
+
+                // BigInteger takes care of sign and leading zeroes
+                hash = new BigInteger(digest.digest()).toString(16);
+            } catch (NoSuchAlgorithmException ex) {
+                ex.printStackTrace();
+                return;
+            }
+
+
+            try {
+                MojangAuthenticator.registerHasJoined((String) playerConnection.getCache().get("username"), hash);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             // Login success packet
             playerConnection.communicationState = CommunicationState.PLAY;
