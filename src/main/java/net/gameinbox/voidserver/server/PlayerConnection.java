@@ -34,10 +34,15 @@ public class PlayerConnection {
     private SecretKey sharedSecret;
     private byte[] verifyToken;
 
+    // Compression
+
+    private boolean compressionEnabled;
+
     public PlayerConnection(Channel channel, CommunicationState communicationState) {
         this.channel = channel;
         this.communicationState = communicationState;
         this.cache = new HashMap<>();
+        this.compressionEnabled = false;
     }
 
     public void sendPacket(EncodedPacket packet) {
@@ -107,6 +112,14 @@ public class PlayerConnection {
 
     public HashMap<String, Object> getCache() {
         return cache;
+    }
+
+    public void setCompressionEnabled(boolean compressionEnabled) {
+        this.compressionEnabled = compressionEnabled;
+    }
+
+    public boolean isCompressionEnabled() {
+        return compressionEnabled;
     }
 
 }
