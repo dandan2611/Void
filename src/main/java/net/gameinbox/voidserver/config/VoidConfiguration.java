@@ -22,6 +22,11 @@ public class VoidConfiguration {
      */
     boolean useEncryption = false;
 
+    /**
+     * Are the packets between the client and the server compressed?
+     */
+    boolean useCompression = true;
+
     public int getServerPort() {
         return serverPort;
     }
@@ -38,4 +43,8 @@ public class VoidConfiguration {
         return useEncryption;
     }
 
+    public boolean isUseCompression() {
+        return useCompression;
+    }
+    
 }
