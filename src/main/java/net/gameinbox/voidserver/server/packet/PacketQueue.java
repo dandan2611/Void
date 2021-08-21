@@ -101,7 +101,7 @@ public class PacketQueue {
 
                         playerConnection.setParent(player);
 
-                        server.getPlayers().add(player);
+                        server.registerPlayer(player);
 
                         PacketClientLoginSuccess packetClientLoginSuccess = new PacketClientLoginSuccess();
 
