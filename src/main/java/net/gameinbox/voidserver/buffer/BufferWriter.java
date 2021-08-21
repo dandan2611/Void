@@ -9,7 +9,7 @@ public class BufferWriter {
 
     private final ByteBuf buffer;
 
-    private BufferWriter(ByteBuf buffer) {
+    public BufferWriter(ByteBuf buffer) {
         this.buffer = buffer;
     }
 
