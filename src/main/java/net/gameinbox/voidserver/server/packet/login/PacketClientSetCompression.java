@@ -1,6 +1,7 @@
 package net.gameinbox.voidserver.server.packet.login;
 
 import net.gameinbox.voidserver.buffer.BufferReader;
+import net.gameinbox.voidserver.buffer.BufferWriter;
 import net.gameinbox.voidserver.server.packet.EncodedPacket;
 import net.gameinbox.voidserver.server.packet.PacketBound;
 import net.gameinbox.voidserver.server.protocol.ProtocolVersion;
@@ -35,7 +36,15 @@ public class PacketClientSetCompression extends PacketLogin<PacketClientSetCompr
 
     @Override
     public EncodedPacket encode() {
-        return null;
+        BufferWriter writer = BufferWriter.newWriter();
+
+        writer.writeVarInt(thresold);
+
+        EncodedPacket encodedPacket = new EncodedPacket(writer.getBuffer());
+
+        writer.release();
+
+        return encodedPacket;
     }
 
 }

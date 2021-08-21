@@ -46,5 +46,5 @@ public class VoidConfiguration {
     public boolean isUseCompression() {
         return useCompression;
     }
-    
+
 }
